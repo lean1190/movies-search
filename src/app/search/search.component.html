@@ -1,0 +1,34 @@
+<div class="search">
+  <div class="search-header">
+    <div>
+      <h1>Find your favorite movie</h1>
+    </div>
+    <div [formGroup]="searchForm">
+      <input formControlName="title" type="text" placeholder="E.g. Harry Potter" data-test-hook="search-input"/>
+    </div>
+  </div>
+  <div class="search-results">
+    <div *ngFor="let moviesGroup of (movies | async)" class="search-results-group">
+      <div class="search-results-group-title">
+        <h2>| Movies from {{ moviesGroup.year }}</h2>
+      </div>
+      <div class="search-results-group-movies">
+        <div *ngFor="let movie of moviesGroup.movies" class="search-results-group-movie">
+          <div class="search-results-group-movie-image">
+            <img alt="{{ movie.title }}" src="{{ movie.posterUrl }}"/>
+          </div>
+          <div class="search-results-group-movie-info">
+            <div class="search-results-group-movie-info-title">
+              <strong>
+                <a target="_blank" [href]="'https://www.imdb.com/title/' + movie.imdbId">{{ movie.title }}</a>
+              </strong>
+            </div>
+            <div class="search-results-group-movie-info-awards">
+              {{ movie.awards }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
