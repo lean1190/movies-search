@@ -1,3 +1,3 @@
 module.exports = {
-    'src/**/*.{js,ts,html,css,scss}': ['npm run lint:fix']
+    'src/**/*.{js,ts,html}': ['eslint --fix']
 };
