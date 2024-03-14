@@ -3,6 +3,7 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
+  "plugins": ["simple-import-sort"],
   "overrides": [
     {
       "files": [
@@ -30,7 +31,13 @@
             "prefix": "app",
             "style": "kebab-case"
           }
-        ]
+        ],
+        // Simple import sort plugin
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error",
+
+        // Native ESLint rules
+        "indent": ["error", 4, { "flatTernaryExpressions": true }]
       }
     },
     {
