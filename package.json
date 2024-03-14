@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:favorite-movies-updated": "node dist/favorite-movies-updated/server/server.mjs",
+    "start:ssr": "node dist/favorite-movies-updated/server/server.mjs",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "dependencies:check": "ncu",
