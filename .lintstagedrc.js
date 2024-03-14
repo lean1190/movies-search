@@ -1,4 +1,3 @@
 module.exports = {
-    // '*.ts': ['npm run lint:fix', () => 'npx tsc --skipLibCheck --noEmit']
-    '*.ts': 'echo Lint done'
+    'src/**/*.{js,ts,html,css,scss}': ['npm run lint:fix']
 };
