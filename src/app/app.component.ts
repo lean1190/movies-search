@@ -1,4 +1,3 @@
-import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
@@ -7,8 +6,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
     standalone: true,
     imports: [
         RouterOutlet,
-        RouterLink,
-        HttpClientModule
+        RouterLink
     ],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'

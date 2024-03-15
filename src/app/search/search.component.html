@@ -1,34 +1,40 @@
-<div class="search">
-  <div class="search-header">
-    <div>
-      <h1>Find your favorite movie</h1>
-    </div>
-    <div [formGroup]="searchForm">
-      <input formControlName="title" type="text" placeholder="E.g. Harry Potter" data-test-hook="search-input"/>
-    </div>
-  </div>
-  <div class="search-results">
-    <div *ngFor="let moviesGroup of (movies | async)" class="search-results-group">
-      <div class="search-results-group-title">
-        <h2>| Movies from {{ moviesGroup.year }}</h2>
-      </div>
-      <div class="search-results-group-movies">
-        <div *ngFor="let movie of moviesGroup.movies" class="search-results-group-movie">
-          <div class="search-results-group-movie-image">
-            <img alt="{{ movie.title }}" src="{{ movie.posterUrl }}"/>
-          </div>
-          <div class="search-results-group-movie-info">
-            <div class="search-results-group-movie-info-title">
-              <strong>
-                <a target="_blank" [href]="'https://www.imdb.com/title/' + movie.imdbId">{{ movie.title }}</a>
-              </strong>
+<section>
+    <header class="bg-[url('/assets/movies.jpeg')] bg-contain h-40 sm:h-96 flex items-center justify-center">
+        <div class="flex flex-col items-center justify-center p-8 rounded bg-slate-700">
+            <h1 class="m-0 mb-4">Find your favorite movie</h1>
+            <div [formGroup]="searchForm">
+                <input
+                    pInputText
+                    class="w-96"
+                    formControlName="title"
+                    type="text"
+                    placeholder="E.g. Harry Potter"
+                    data-test-hook="search-input"
+                />
             </div>
-            <div class="search-results-group-movie-info-awards">
-              {{ movie.awards }}
-            </div>
-          </div>
         </div>
-      </div>
+    </header>
+    <div class="max-w-4xl mx-auto">
+        <article *ngFor="let moviesGroup of (movies | async)">
+            <div class="search-results-group-title">
+                <h2 class="w-full p-8 bg-teal-600">Movies from {{ moviesGroup.year }}</h2>
+            </div>
+            <div class="flex items-start justify-between">
+                <div *ngFor="let movie of moviesGroup.movies">
+                    <p-card
+                        [header]="movie.title"
+                        [subheader]="'⭐ ' + movie.rating"
+                        class="w-full sm:w-64 block"
+                    >
+                        <ng-template pTemplate="header">
+                            <a target="_blank" [href]="'https://www.imdb.com/title/' + movie.imdbId" class="w-full sm:w-64 h-52 block">
+                                <img [alt]="movie.title" [src]="movie.posterUrl" class="w-full h-full object-cover" />
+                            </a>
+                        </ng-template>
+                        <p class="m-0 p-0">{{ movie.awards }}</p>
+                    </p-card>
+                </div>
+            </div>
+        </article>
     </div>
-  </div>
-</div>
+</section>

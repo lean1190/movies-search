@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { fromWorker } from 'observable-webworker';
 import { forkJoin, map, Observable, switchMap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { runWebWorker } from '../../../lib/web-worker';
 import { Movie, MoviesGroup, RatingSource } from '../types/movie';
 
 @Injectable()
@@ -43,7 +43,10 @@ export class SearchService {
     }
 
     private getGroupedMovies(movies: Observable<Movie[]>): Observable<MoviesGroup[]> {
-        return runWebWorker<Movie[], MoviesGroup[]>(movies, '../web-workers/group-movies.worker');
+        return fromWorker<Movie[], MoviesGroup[]>(() => new Worker(
+            new URL('../web-workers/group-movies.worker', import.meta.url),
+            { type: 'module' }
+        ), movies);
     }
 }
 
