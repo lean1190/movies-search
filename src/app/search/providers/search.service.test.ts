@@ -1,17 +1,55 @@
 import { HttpClient } from '@angular/common/http';
 import { createServiceFactory, createSpyObject, SpectatorService, SpyObject } from '@ngneat/spectator/jest';
-import * as observableWebWorker from 'observable-webworker';
 import { of, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { takeValues } from '../../../lib/observable';
+import * as webWorker from '../../../lib/web-worker';
 import { RatingSource } from '../types/movie';
 import { SearchService } from './search.service';
 
 describe('SearchService', () => {
 
+    const moviesGroups = [
+        {
+            year: '2020',
+            movies: [
+                {
+                    title: 'title1',
+                    year: 'year1',
+                    posterUrl: 'poster1',
+                    imdbId: 'id1',
+                    rating: '10/10',
+                    awards: 'award1',
+                },
+                {
+                    title: 'title2',
+                    year: 'year2',
+                    posterUrl: 'poster2',
+                    imdbId: 'id2',
+                    rating: '10/10',
+                    awards: 'award2',
+                },
+            ],
+        },
+        {
+            year: '2019',
+            movies: [
+                {
+                    title: 'title3',
+                    year: 'year3',
+                    posterUrl: 'poster3',
+                    imdbId: 'id3',
+                    rating: '10/10',
+                    awards: 'award3',
+                },
+            ],
+        },
+    ];
+
     let searchService: SearchService;
     let httpClientMock: SpyObject<HttpClient>;
+    let webWorkerMock: jest.SpyInstance;
 
     let spectator: SpectatorService<SearchService>;
 
@@ -19,6 +57,7 @@ describe('SearchService', () => {
 
     beforeEach(() => {
         httpClientMock = createSpyObject(HttpClient);
+        webWorkerMock = jest.spyOn(webWorker, 'runWebWorker').mockReturnValue(of(moviesGroups));
 
         spectator = createService({
             providers: [{ provide: HttpClient, useValue: httpClientMock }]
@@ -29,49 +68,12 @@ describe('SearchService', () => {
 
     describe('searchMovies', () => {
         const search = 'search';
-        const moviesGroups = [
-            {
-                year: '2020',
-                movies: [
-                    {
-                        title: 'title1',
-                        year: 'year1',
-                        posterUrl: 'poster1',
-                        imdbId: 'id1',
-                        rating: '10/10',
-                        awards: 'award1',
-                    },
-                    {
-                        title: 'title2',
-                        year: 'year2',
-                        posterUrl: 'poster2',
-                        imdbId: 'id2',
-                        rating: '10/10',
-                        awards: 'award2',
-                    },
-                ],
-            },
-            {
-                year: '2019',
-                movies: [
-                    {
-                        title: 'title3',
-                        year: 'year3',
-                        posterUrl: 'poster3',
-                        imdbId: 'id3',
-                        rating: '10/10',
-                        awards: 'award3',
-                    },
-                ],
-            },
-        ];
 
-        let workerSpy: jest.SpyInstance;
         let httpGetSpy: jest.SpyInstance;
         let getMovieSpy: jest.SpyInstance;
 
         beforeEach(() => {
-            workerSpy = jest.spyOn(observableWebWorker, 'fromWorker').mockReturnValue(of(moviesGroups));
+            webWorkerMock = jest.spyOn(webWorker, 'runWebWorker').mockReturnValue(of(moviesGroups));
             httpGetSpy = httpClientMock.get.mockReturnValue(
                 of({
                     Search: [
@@ -94,7 +96,8 @@ describe('SearchService', () => {
         });
 
         it('should return movies', async () => {
-            const [movies] = await takeValues(searchService.searchMovies(search));
+            const movies$ = searchService.searchMovies(search);
+            const [movies] = await takeValues(movies$);
 
             const expectedUrl = `${environment.omdbApiUrl}apikey=${environment.omdbApiKey}&type=movie&s=${search}&page=1`;
             expect(movies).toEqual(moviesGroups);
@@ -102,13 +105,7 @@ describe('SearchService', () => {
             expect(getMovieSpy).toHaveBeenCalledWith('id1');
             expect(getMovieSpy).toHaveBeenCalledWith('id2');
             expect(getMovieSpy).toHaveBeenCalledWith('id3');
-            expect(workerSpy).toHaveBeenCalledWith(
-                () =>
-                    new Worker(
-                        new URL('../web-workers/group-movies.worker', import.meta.url),
-                        { type: 'module' }
-                    )
-            );
+            expect(webWorkerMock).toHaveBeenCalled();
         });
 
         it('should return an error if the api errors', async () => {

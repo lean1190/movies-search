@@ -3,8 +3,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": ["jest"],
-    "module": "es2022"
+    "types": ["jest"]
   },
   "include": [
     "src/**/*.spec.ts",
